@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YK Downloader | Çoklu Platform Video İndirici</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050505;
+      --card: #151515;
+      --line: #242424;
+      --gold: #f2c94c;
+      --gold2: #d9b33c;
+      --text: #f8f8f8;
+      --muted: #9b9b9b;
+      --sub: #6b6b6b;
+      --ok: #22c55e;
+      --err: #ef4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+        sans-serif;
+    }
+
+    body {
+      background: radial-gradient(
+          1600px 800px at 50% -10%,
+          #201a0a 0%,
+          transparent 70%
+        ),
+        #050505;
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.8;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(
+        rgba(242, 201, 76, 0.08) 1px,
+        transparent 1px
+      );
+      background-size: 20px 20px;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    header {
+      text-align: center;
+      padding: 44px 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      font-size: clamp(18px, 4vw, 36px);
+      font-weight: 800;
+      letter-spacing: clamp(10px, 4vw, 20px);
+      text-transform: uppercase;
+    }
+
+    .logo i {
+      color: var(--gold);
+      filter: drop-shadow(0 0 60px rgba(242, 201, 76, 0.3));
+    }
+
+    .tagline {
+      color: var(--sub);
+      text-transform: uppercase;
+      letter-spacing: clamp(6px, 3vw, 14px);
+      font-size: clamp(7px, 1.2vw, 10px);
+    }
+
+    main {
+      max-width: 1220px;
+      margin: auto;
+      padding: 0 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(
+          180deg,
+          rgba(242, 201, 76, 0.1) 0%,
+          transparent 80%
+        ),
+        #151515;
+      border: 1px solid #242424;
+      border-radius: 16px;
+      box-shadow: 0 90px 160px -120px rgba(242, 201, 76, 0.5);
+      backdrop-filter: blur(6px);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px 0;
+    }
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-group i {
+      color: var(--gold);
+    }
+
+    h1,
+    h2 {
+      font-size: 12px;
+      letter-spacing: 11px;
+      text-transform: uppercase;
+    }
+
+    .badge {
+      border: 1px solid rgba(242, 201, 76, 0.9);
+      color: var(--gold);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 9px;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+    }
+
+    .pill {
+      border: 1px solid #242424;
+      color: #9b9b9b;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 9px;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+    }
+
+    .pill.active {
+      border-color: rgba(242, 201, 76, 0.9);
+      color: var(--gold);
+    }
+
+    .card-body {
+      padding: 16px 30px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 360px;
+      background: radial-gradient(
+          800px 300px at top,
+          rgba(242, 201, 76, 0.15) 0%,
+          rgba(8, 8, 8, 0.99) 100%
+        ),
+        #0a0a0a;
+      color: #f8f8f8;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 24px 28px;
+      font-size: 14px;
+      line-height: 2;
+      resize: vertical;
+      white-space: pre-wrap;
+      caret-color: #f2c94c;
+    }
+
+    textarea::placeholder {
+      color: #666;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: rgba(242, 201, 76, 0.95);
+      box-shadow: 0 0 0 4px rgba(242, 201, 76, 0.12);
+    }
+
+    .muted {
+      color: #9b9b9b;
+      font-size: 13px;
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    @media (max-width: 980px) {
+      .grid2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .label {
+      color: #6b6b6b;
+      font-size: 9px;
+      letter-spacing: 9px;
+      text-transform: uppercase;
+    }
+
+    .radios {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .radio {
+      position: relative;
+    }
+
+    .radio input {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .radio span {
+      display: block;
+      border: 1px solid #242424;
+      border-radius: 999px;
+      padding: 10px 0;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+    }
+
+    .radio input:checked + span {
+      border-color: #f2c94c;
+      color: #f2c94c;
+    }
+
+    select {
+      appearance: none;
+      background: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 5l3 3 3-3' stroke='%23f2c94c' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E")
+          no-repeat right 18px center,
+        linear-gradient(90deg, rgba(242, 201, 76, 0.12), transparent),
+        #0a0a0a;
+      color: #f8f8f8;
+      border: 1px solid #242424;
+      border-radius: 999px;
+      padding: 10px 46px 10px 20px;
+      font-size: 11px;
+      letter-spacing: 9px;
+      text-transform: uppercase;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #f2c94c;
+    }
+
+    .actions {
+      gap: 10px;
+    }
+
+    .btn {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 11px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .gold {
+      background: radial-gradient(circle, #f2c94c, #d9b33c);
+      color: #000;
+    }
+
+    .ghost {
+      background: transparent;
+      color: #f8f8f8;
+      border: 1px solid #242424;
+    }
+
+    .status {
+      gap: 12px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      color: #9b9b9b;
+      font-size: 13px;
+    }
+
+    .ell {
+      max-width: 70%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: right;
+      color: #f8f8f8;
+    }
+
+    .bar {
+      height: 6px;
+      background: #101010;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f2c94c, #d9b33c);
+      width: 0%;
+      transition: width 0.15s ease;
+    }
+
+    .mini {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .mini span {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .log,
+    .errs {
+      max-height: 360px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      color: #9b9b9b;
+      font-size: 13px;
+    }
+
+    .l {
+      display: flex;
+      gap: 12px;
+    }
+
+    .ts {
+      min-width: 60px;
+      color: #6b6b6b;
+    }
+
+    .ok {
+      color: #22c55e;
+    }
+
+    .err {
+      color: #ef4444;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px 40px;
+      color: #6b6b6b;
+      text-transform: uppercase;
+      letter-spacing: 10px;
+      font-size: 9px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 160%);
+      background: linear-gradient(90deg, #f2c94c, #d9b33c);
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 999px;
+      letter-spacing: 8px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      transition: 0.2s;
+      z-index: 9;
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0);
+    }
+
+    .toast.err {
+      background: linear-gradient(90deg, #ef4444, #dc2626);
+      color: #fff;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(242, 201, 76, 0.4);
+      border-radius: 999px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">
+      <i class="bi bi-cloud-download-fill"></i>
+      <span>YK DOWNLOADER</span>
+    </div>
+    <p class="tagline">
+      YOUTUBE • INSTAGRAM • TIKTOK • X • FACEBOOK • REDDIT • 1000+ PLATFORM
+    </p>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="card-header">
+        <div class="title-group">
+          <i class="bi bi-link-45deg"></i>
+          <h1>Video Linkleri</h1>
+        </div>
+        <span class="badge">ÇOKLU LİNK DESTEĞİ</span>
+      </div>
+      <div class="card-body">
+        <textarea
+          id="links"
+          spellcheck="false"
+          placeholder="Her satıra bir link girin...
+
+https://www.youtube.com/watch?v=...
+https://www.instagram.com/reels/...
+https://www.tiktok.com/@kullanici/video/...
+https://x.com/kullanici/status/..."
+        ></textarea>
+        <p class="muted">
+          Hatalı linkler atlanarak diğerlerine devam edilecektir.
+        </p>
+      </div>
+    </section>
+
+    <div class="grid2">
+      <section class="card">
+        <div class="card-header">
+          <div class="title-group">
+            <i class="bi bi-sliders"></i>
+            <h2>Format & Kalite</h2>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="group">
+            <span class="label">FORMAT</span>
+            <div class="radios">
+              <label class="radio">
+                <input type="radio" name="fmt" value="mp4" checked />
+                <span>MP4</span>
+              </label>
+              <label class="radio">
+                <input type="radio" name="fmt" value="mp3" />
+                <span>MP3</span>
+              </label>
+            </div>
+          </div>
+          <div class="group">
+            <span class="label">KALİTE (MP4)</span>
+            <select id="q">
+              <option value="auto">En Yüksek (Otomatik)</option>
+              <option value="1080">1080p</option>
+              <option value="720">720p</option>
+              <option value="480">480p</option>
+              <option value="360">360p</option>
+              <option value="240">240p</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="title-group">
+            <i class="bi bi-power"></i>
+            <h2>Kontrol</h2>
+          </div>
+          <span class="pill" id="pill">BEKLEMEDE</span>
+        </div>
+        <div class="card-body actions">
+          <button class="btn gold" id="go">
+            <i class="bi bi-cloud-download"></i>
+            İNDİRMEYİ BAŞLAT
+          </button>
+          <button class="btn ghost" id="clr">
+            <i class="bi bi-eraser"></i>
+            ALANI TEMİZLE
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="card-header">
+        <div class="title-group">
+          <i class="bi bi-speedometer2"></i>
+          <h2>Anlık Durum</h2>
+        </div>
+      </div>
+      <div class="card-body status">
+        <div class="row">
+          <span>İşlenen</span>
+          <b id="done">0 / 0</b>
+        </div>
+        <div class="row">
+          <span>Başlık</span>
+          <b class="ell" id="title">-</b>
+        </div>
+        <div class="bar">
+          <div class="fill" id="fill"></div>
+        </div>
+        <div class="row mini">
+          <span>İlerleme <b id="pct">0%</b></span>
+          <span>Hız <b id="spd">N/A</b></span>
+          <span>ETA <b id="eta">N/A</b></span>
+          <span>Durum <b id="st">Beklemede...</b></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div class="title-group">
+          <i class="bi bi-terminal"></i>
+          <h2>İşlem Kayıtları</h2>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="log" id="log"></div>
+      </div>
+    </section>
+
+    <section class="card" id="ec" style="display: none">
+      <div class="card-header">
+        <div class="title-group">
+          <i class="bi bi-exclamation-triangle"></i>
+          <h2>Hatalı Linkler</h2>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="errs" id="errs"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    YK DOWNLOADER • YT-DLP ALTYAPISI • TÜM PLATFORMLAR İÇİN UYUMLU
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const links = document.getElementById("links");
+    const fmts = document.querySelectorAll("input[name=fmt]");
+    const q = document.getElementById("q");
+    const go = document.getElementById("go");
+    const clr = document.getElementById("clr");
+    const pill = document.getElementById("pill");
+    const done = document.getElementById("done");
+    const title = document.getElementById("title");
+    const fill = document.getElementById("fill");
+    const pct = document.getElementById("pct");
+    const spd = document.getElementById("spd");
+    const eta = document.getElementById("eta");
+    const st = document.getElementById("st");
+    const log = document.getElementById("log");
+    const ec = document.getElementById("ec");
+    const errs = document.getElementById("errs");
+    const toast = document.getElementById("toast");
+    let iv = null;
+
+    function show(m, e = false) {
+      toast.textContent = m;
+      toast.classList.toggle("err", e);
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2300);
+    }
+    function gf() {
+      for (let x of fmts) if (x.checked) return x.value;
+      return "mp4";
+    }
+    function h(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    go.onclick = async () => {
+      const raw = links.value.trim();
+      if (!raw) {
+        show("Lütfen en az 1 link girin", true);
+        return;
+      }
+      go.disabled = true;
+      go.innerHTML = '<i class="bi bi-hourglass"></i> BAŞLATILIYOR...';
+      try {
+        const r = await fetch("/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ links: raw, format: gf(), quality: q.value }),
+        });
+        const d = await r.json();
+        if (!d.ok) {
+          show(d.msg || "Hata", true);
+          go.disabled = false;
+          go.innerHTML =
+            '<i class="bi bi-cloud-download"></i> İNDİRMEYİ BAŞLAT';
+          return;
+        }
+        show(d.msg);
+        if (iv) clearInterval(iv);
+        iv = setInterval(up, 850);
+        up();
+      } catch (e) {
+        show("Bağlantı hatası", true);
+        go.disabled = false;
+        go.innerHTML =
+          '<i class="bi bi-cloud-download"></i> İNDİRMEYİ BAŞLAT';
+      }
+    };
+
+    clr.onclick = () => {
+      links.value = "";
+      log.innerHTML = "";
+      errs.innerHTML = "";
+      ec.style.display = "none";
+      done.textContent = "0 / 0";
+      title.textContent = "-";
+      fill.style.width = "0%";
+      pct.textContent = "0%";
+      spd.textContent = "N/A";
+      eta.textContent = "N/A";
+      st.textContent = "Beklemede...";
+      pill.classList.remove("active");
+      pill.textContent = "BEKLEMEDE";
+    };
+
+    async function up() {
+      try {
+        const r = await fetch("/status");
+        const s = await r.json();
+        done.textContent = s.queue_done + " / " + s.queue_total;
+        title.textContent = s.current_title || s.current_url || "-";
+        fill.style.width = s.progress + "%";
+        pct.textContent = s.progress + "%";
+        spd.textContent = s.speed || "N/A";
+        eta.textContent = s.eta || "N/A";
+        st.textContent = s.status_text || "Beklemede...";
+        if (s.running) {
+          pill.classList.add("active");
+          pill.textContent = "İNDİRİYOR";
+        } else {
+          pill.classList.remove("active");
+          pill.textContent = "BEKLEMEDE";
+        }
+        log.innerHTML = "";
+        (s.logs || [])
+          .slice()
+          .reverse()
+          .forEach((x) => {
+            const d = document.createElement("div");
+            d.className = "l";
+            d.innerHTML =
+              '<span class="ts">[' +
+              h(x.time) +
+              ']</span><span class="' +
+              (x.type || "info") +
+              '">' +
+              h(x.text) +
+              "</span>";
+            log.appendChild(d);
+          });
+        if (s.errors && s.errors.length) {
+          ec.style.display = "block";
+          errs.innerHTML = "";
+          s.errors
+            .slice(-10)
+            .reverse()
+            .forEach((x) => {
+              const d = document.createElement("div");
+              d.className = "err-item";
+              d.textContent = x;
+              errs.appendChild(d);
+            });
+        } else {
+          ec.style.display = "none";
+        }
+        if (!s.running) {
+          go.disabled = false;
+          go.innerHTML =
+            '<i class="bi bi-cloud-download"></i> İNDİRMEYİ BAŞLAT';
+          if (iv) {
+            clearInterval(iv);
+            iv = null;
+          }
+        }
+      } catch (e) {}
+    }
+    up();
+    setInterval(up, 1000);
+  </script>
+</body>
+
+</html>
